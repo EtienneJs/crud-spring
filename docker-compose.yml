@@ -1,0 +1,30 @@
+services:
+  app:
+    depends_on:
+      - mongodb
+    image: crud-app
+    container_name: crud-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - MONGO_USERNAME=${MONGO_USERNAME}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_DB=${MONGO_DB}
+      - SPRING_DATA_MONGODB_URI=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_DB}:27017
+
+  mongodb:
+    container_name: ${MONGO_DB}
+    image: mongo:6.0
+    volumes:
+      - mongodb_data:/data/db
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+    command: ['--auth']
+
+volumes:
+  mongodb_data:
