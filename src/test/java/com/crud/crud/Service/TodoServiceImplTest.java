@@ -16,20 +16,25 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.annotation.Import;
 
 import com.crud.crud.Entity.TodoEntity;
 import com.crud.crud.Repository.TodoRepository;
 import com.crud.crud.RequestRecord.CreateTodoRecord;
 import com.crud.crud.RequestRecord.UpdateTodoRecord;
+import com.crud.crud.config.ContainerBaseTest;
+import com.crud.crud.config.MongoDBTestConfig;
+import com.crud.crud.Exceptions.TodoNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
-public class TodoServiceTest {
+@Import(MongoDBTestConfig.class)
+public class TodoServiceImplTest extends ContainerBaseTest{
     
     @Mock
     private TodoRepository todoRepository;
 
     @InjectMocks
-    private TodoService todoService;
+    private TodoServiceImpl todoService;
 
     @Test
     public void testCreateTodo() {
@@ -103,7 +108,7 @@ public class TodoServiceTest {
 
         when(todoRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class, () -> {
+        assertThrows(TodoNotFoundException.class, () -> {
             todoService.updateTodo(id, updateTodoRecord);
         });
         verify(todoRepository, times(0)).save(any(TodoEntity.class));
@@ -138,7 +143,7 @@ public class TodoServiceTest {
 
         when(todoRepository.existsById(id)).thenReturn(false);
 
-        assertThrows(RuntimeException.class, () -> {
+        assertThrows(TodoNotFoundException.class, () -> {
             todoService.deleteTodo(id);
         });
         verify(todoRepository, times(0)).deleteById(id);

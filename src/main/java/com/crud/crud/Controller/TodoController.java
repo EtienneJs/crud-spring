@@ -2,6 +2,7 @@ package com.crud.crud.Controller;
 
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -13,12 +14,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.data.domain.Pageable;
 import com.crud.crud.Entity.TodoEntity;
 import com.crud.crud.RequestRecord.CreateTodoRecord;
 import com.crud.crud.RequestRecord.GetAllTodosRecord;
 import com.crud.crud.RequestRecord.UpdateTodoRecord;
-import com.crud.crud.Service.TodoService;
+import com.crud.crud.Service.TodoServiceImpl;
 import com.crud.crud.util.ApiResponse;
 
 import jakarta.validation.constraints.NotBlank;
@@ -28,11 +29,12 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/todos")
 @RequiredArgsConstructor
 public class TodoController {
-    private final TodoService todoService;
+    private final TodoServiceImpl todoService;
 
     @GetMapping
     public ResponseEntity<Page<TodoEntity>> getAllTodos(@Validated GetAllTodosRecord getAllTodosRecord) {
-        return ResponseEntity.ok(todoService.getAllTodos(getAllTodosRecord));
+        Pageable pageable = PageRequest.of(getAllTodosRecord.page(), getAllTodosRecord.size());
+        return ResponseEntity.ok(todoService.findAllWithFilters(getAllTodosRecord, pageable));
     }
 
     @GetMapping("/{id}")

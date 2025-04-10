@@ -1,5 +1,32 @@
-{"properties": [{
-  "name": "springdoc.api-docs.path",
-  "type": "java.lang.String",
-  "description": "A description for 'springdoc.api-docs.path'"
-}]}
+{"properties": [
+  {
+    "name": "springdoc.api-docs.path",
+    "type": "java.lang.String",
+    "description": "A description for 'springdoc.api-docs.path'"
+  },
+  {
+    "name": "spring.mongodb.embedded.version",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.mongodb.embedded.version'"
+  },
+  {
+    "name": "spring.mongodb.embedded.features",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.mongodb.embedded.features'"
+  },
+  {
+    "name": "spring.data.mongodb.uri",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.data.mongodb.uri'"
+  },
+  {
+    "name": "spring.data.mongodb.embedded.version",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.data.mongodb.embedded.version'"
+  },
+  {
+    "name": "spring.data.mongodb.embedded.features",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.data.mongodb.embedded.features'"
+  }
+]}

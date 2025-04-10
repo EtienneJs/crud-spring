@@ -2,7 +2,7 @@ services:
   app:
     depends_on:
       - mongodb
-    image: crud-app
+    image: nekoscript/crud-app:1.0.0
     container_name: crud-app
     build:
       context: .
