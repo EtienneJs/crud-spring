@@ -1,0 +1,6 @@
+target/
+.git/
+.env
+.gitignore
+src/main/resources/static/ts
+README.md
