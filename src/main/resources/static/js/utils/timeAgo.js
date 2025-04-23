@@ -1,6 +1,7 @@
 export function timeago() {
     const timeElements = document.querySelectorAll('.timeago');
     timeElements.forEach(el => {
+        console.log(el)
         const datetime = el.dateTime;
         const date = new Date(datetime);
         const now = new Date();
