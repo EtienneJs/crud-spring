@@ -1,7 +1,6 @@
 export function timeago(){
     const timeElements = document.querySelectorAll('.timeago') as NodeListOf<HTMLTimeElement>;  
     timeElements.forEach(el => {
-        console.log(el);
         const datetime:string = el.dateTime;
         const date: Date = new Date(datetime);
         const now:Date = new Date();
@@ -19,8 +18,7 @@ export function timeago(){
         } else if (diffMin > 0) {
         text = `hace ${diffMin} minuto${diffMin > 1 ? 's' : ''}`;
         } else {
-            console.log(diffDay);
-        text = `hace unos segundos`;
+            text = `hace unos segundos`;
         }
 
         el.textContent = text;
