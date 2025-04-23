@@ -20,7 +20,7 @@ export function timeago(){
         } else {
             text = `hace unos segundos`;
         }
-
+        console.log('AAA');
         el.textContent = text;
     });
 }
