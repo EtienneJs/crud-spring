@@ -8,6 +8,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.annotation.Import;
 
 import com.crud.crud.Entity.TodoEntity;
+import com.crud.crud.Enums.StateEnum;
 import com.crud.crud.Repository.TodoRepository;
 import com.crud.crud.RequestRecord.CreateTodoRecord;
 import com.crud.crud.RequestRecord.UpdateTodoRecord;
@@ -41,9 +43,11 @@ public class TodoServiceImplTest extends ContainerBaseTest{
         // Arrange
         String expectedTitle = "Comprar víveres";
         String expectedDescription = "Comprar leche, pan y huevos";
-        CreateTodoRecord createTodoRecord = new CreateTodoRecord(expectedTitle, expectedDescription);
+        String expectedEndDate = LocalDateTime.now().toString();
+        String expectedCreatedAt = LocalDateTime.now().toString();
+        CreateTodoRecord createTodoRecord = new CreateTodoRecord(expectedTitle, expectedDescription, expectedCreatedAt, expectedEndDate);
         
-        TodoEntity expectedTodo = new TodoEntity(expectedTitle, expectedDescription);
+        TodoEntity expectedTodo = new TodoEntity(expectedTitle, expectedDescription, expectedEndDate, expectedCreatedAt);
         
         when(todoRepository.save(any(TodoEntity.class))).thenReturn(expectedTodo);
 
@@ -76,10 +80,12 @@ public class TodoServiceImplTest extends ContainerBaseTest{
         String expectedTitle = "Comprar víveres";
         String expectedDescription = "Comprar leche, pan y huevos";
         boolean expectedCompleted = true;
+        String expectedEndDate = LocalDateTime.now().toString();
+        String expectedCreatedAt = LocalDateTime.now().toString();
 
-        UpdateTodoRecord updateTodoRecord = new UpdateTodoRecord(expectedTitle, expectedDescription, expectedCompleted);
+        UpdateTodoRecord updateTodoRecord = new UpdateTodoRecord(expectedTitle, expectedDescription, StateEnum.COMPLETED, expectedEndDate);
 
-        TodoEntity expectedTodo = new TodoEntity(id, expectedTitle, expectedDescription, expectedCompleted);
+        TodoEntity expectedTodo = new TodoEntity(id, expectedTitle, expectedDescription, expectedCreatedAt, expectedEndDate, StateEnum.COMPLETED);
         when(todoRepository.findById(id)).thenReturn(Optional.of(expectedTodo));
         when(todoRepository.save(any(TodoEntity.class))).thenReturn(expectedTodo);
 
@@ -96,7 +102,7 @@ public class TodoServiceImplTest extends ContainerBaseTest{
         TodoEntity saved = captor.getValue();
         assertEquals(expectedTitle, saved.getTitle(), "El título del TODO no coincide");
         assertEquals(expectedDescription, saved.getDescription(), "La descripción del TODO no coincide");
-        assertEquals(expectedCompleted, saved.isCompleted(), "El estado del TODO no coincide");
+        assertEquals(expectedCompleted, saved.getState().equals(StateEnum.COMPLETED), "El estado del TODO no coincide");
         assertEquals(id, saved.getId(), "El ID del TODO no coincide");
     }
 
@@ -104,7 +110,8 @@ public class TodoServiceImplTest extends ContainerBaseTest{
     public void testUpdateTodoNotFound() {
         // Arrange
         String id = "67f7128b43ca2965eb3df6aa";
-        UpdateTodoRecord updateTodoRecord = new UpdateTodoRecord("Nuevo Título", "Nueva Descripción", false);
+        String expectedEndDate = LocalDateTime.now().toString();
+        UpdateTodoRecord updateTodoRecord = new UpdateTodoRecord("Nuevo Título", "Nueva Descripción", StateEnum.COMPLETED, expectedEndDate);
 
         when(todoRepository.findById(id)).thenReturn(Optional.empty());
 

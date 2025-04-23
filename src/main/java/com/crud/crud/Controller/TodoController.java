@@ -1,6 +1,10 @@
 package com.crud.crud.Controller;
 
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.data.domain.Pageable;
 import com.crud.crud.Entity.TodoEntity;
+import com.crud.crud.Enums.StateEnum;
 import com.crud.crud.RequestRecord.CreateTodoRecord;
 import com.crud.crud.RequestRecord.GetAllTodosRecord;
 import com.crud.crud.RequestRecord.UpdateTodoRecord;
@@ -44,6 +49,13 @@ public class TodoController {
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 
+    @GetMapping("/state/{state}")
+    public ResponseEntity<ApiResponse<List<TodoEntity>>> getTodosByState(@PathVariable StateEnum state ) {
+        List<TodoEntity> todos = todoService.getTodosByState(state);
+        ApiResponse<List<TodoEntity>> apiResponse = new ApiResponse<>("Todos retrieved successfully", todos);
+        return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+    }
+
     @PostMapping
     public ResponseEntity<ApiResponse<String>> createTodo(@RequestBody @Validated CreateTodoRecord todo) {
         String createdTodoResponse = todoService.createTodo(todo);
@@ -53,8 +65,11 @@ public class TodoController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<String>> updateTodo(@PathVariable String id, @RequestBody @Validated UpdateTodoRecord todo) {
-        String updatedTodoResponse = todoService.updateTodo(id, todo);
-        ApiResponse<String> apiResponse = new ApiResponse<>(updatedTodoResponse);
+        String statePast = todoService.updateTodo(id, todo);
+        Set<String> stateUpdate = new HashSet<>();
+        stateUpdate.add(todo.state().name());
+        stateUpdate.add(statePast);
+        ApiResponse<String> apiResponse = new ApiResponse<String>("Todo Update Succefully",String.join(",", stateUpdate));
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 

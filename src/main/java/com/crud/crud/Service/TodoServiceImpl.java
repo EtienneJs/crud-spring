@@ -1,11 +1,15 @@
 package com.crud.crud.Service;
 
 
+
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.crud.crud.Entity.TodoEntity;
+import com.crud.crud.Enums.StateEnum;
 import com.crud.crud.Exceptions.TodoNotFoundException;
 import com.crud.crud.Interfaces.Todo.TodoService;
 import com.crud.crud.Repository.TodoRepository;
@@ -26,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 public class TodoServiceImpl implements TodoService {
     private final TodoRepository todoRepository;
     private final MongoTemplate mongoTemplate;
+
     @Override
     public Page<TodoEntity> findAllWithFilters(GetAllTodosRecord filters, Pageable pageable) {
         Query query = new Query().with(pageable);
@@ -38,8 +43,8 @@ public class TodoServiceImpl implements TodoService {
             query.addCriteria(Criteria.where("description").regex(filters.description(), "i"));
         }
         
-        if (filters.completed() != null) {
-            query.addCriteria(Criteria.where("completed").is(filters.completed()));
+        if (filters.state() != null && !filters.state().equals(StateEnum.ALL)) {
+            query.addCriteria(Criteria.where("state").is(filters.state().name()));
         }
 
         return PageableExecutionUtils.getPage(
@@ -47,6 +52,11 @@ public class TodoServiceImpl implements TodoService {
             pageable,
             () -> mongoTemplate.count(Query.of(query).limit(-1).skip(-1), TodoEntity.class)
         );
+    }
+
+    public List<TodoEntity> searchTodos() {
+        List<TodoEntity> todos = todoRepository.findAll();
+        return todos;
     }
 
     @Override
@@ -57,14 +67,14 @@ public class TodoServiceImpl implements TodoService {
 
     @Transactional
     public String createTodo(CreateTodoRecord todo) {
-        TodoEntity newTodo = new TodoEntity(todo.title(), todo.description());
+        TodoEntity newTodo = new TodoEntity(todo.title(), todo.description(), todo.endDate(), todo.createdAt());
         todoRepository.save(newTodo);
         return "Todo created successfully";
     }
 
     @Transactional
     public String updateTodo(String id, UpdateTodoRecord todo) {
-        todoRepository.findById(id)
+        TodoEntity actualEntity = todoRepository.findById(id)
             .orElseThrow(() -> new TodoNotFoundException("Todo not found"));
             
         
@@ -72,11 +82,13 @@ public class TodoServiceImpl implements TodoService {
             .id(id)
             .title(todo.title())
             .description(todo.description())
-            .completed(todo.completed())
+            .state(todo.state())
+            .endDate(todo.endDate())
+            .createdAt(actualEntity.getCreatedAt())
             .build();
         
         todoRepository.save(updatedTodo);
-        return "Todo updated successfully";
+        return actualEntity.getState().name();
     }
 
     @Transactional
@@ -86,5 +98,10 @@ public class TodoServiceImpl implements TodoService {
         }
         todoRepository.deleteById(id);
         return "Todo deleted successfully";
+    }
+
+    @Override
+    public List<TodoEntity> getTodosByState(StateEnum state) {
+        return todoRepository.findByState(state);
     }
 }

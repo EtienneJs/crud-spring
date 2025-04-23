@@ -1,0 +1,15 @@
+{
+  "name": "clone-dashboard-jira",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "author": "etienne <etiennemfernandez@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@types/toastify-js": "^1.12.3",
+    "typescript": "^5.8.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.1"
+  }
+}
